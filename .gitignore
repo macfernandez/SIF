@@ -1,0 +1,8 @@
+# python-version
+.python-version
+
+# egg-info
+*.egg-info
+
+# toml
+*.toml
