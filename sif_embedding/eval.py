@@ -3,7 +3,8 @@ from scipy.stats import pearsonr
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 import numpy as np
-import data_io
+
+import sif_embedding.data_io
 
 
 ################################################

@@ -11,10 +11,10 @@ from theano import config
 import lasagne
 from sklearn.decomposition import TruncatedSVD
 
-import data_io
-from proj_model_sim import proj_model_sim
-from proj_model_sentiment import proj_model_sentiment
-import eval
+import sif_embedding.data_io
+from sif_embedding.proj_model_sim import proj_model_sim
+from sif_embedding.proj_model_sentiment import proj_model_sentiment
+import sif_embedding.eval
 
 ##################################################
 def str2bool(v):

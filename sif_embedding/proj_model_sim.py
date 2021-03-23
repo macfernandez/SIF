@@ -3,7 +3,8 @@ import theano
 from theano import tensor as T
 from theano import config
 import lasagne
-from lasagne_average_layer import lasagne_average_layer
+
+from sif_embedding.lasagne_average_layer import lasagne_average_layer
 
 class proj_model_sim(object):
 

@@ -1,4 +1,4 @@
-import data_io
+import sif_embedding.data_io
 
 class tree(object):
 

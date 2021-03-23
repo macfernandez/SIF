@@ -1,5 +1,5 @@
 import numpy as np
-import SIF_embedding
+from sif_embedding import sif_weight
 
 def weighted_average_sim_rmpc(We,x1,x2,w1,w2, params):
     """
@@ -12,8 +12,8 @@ def weighted_average_sim_rmpc(We,x1,x2,w1,w2, params):
     :param params.rmpc: if >0, remove the projections of the sentence embeddings to their first principal component
     :return: scores, scores[i] is the matching score of the pair i
     """
-    emb1 = SIF_embedding.SIF_embedding(We, x1, w1, params)
-    emb2 = SIF_embedding.SIF_embedding(We, x2, w2, params)
+    emb1 = sif_weight.SIF_embedding(We, x1, w1, params)
+    emb2 = sif_weight.SIF_embedding(We, x2, w2, params)
 
     inn = (emb1 * emb2).sum(axis=1)
     emb1norm = np.sqrt((emb1 * emb1).sum(axis=1))
