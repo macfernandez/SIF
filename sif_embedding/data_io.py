@@ -6,7 +6,24 @@ import pickle
 from sif_embedding.tree import tree
 #from theano import config
 
-def getWordmap(textfile):
+def getWordmap(textfile:str):
+    """
+        Takes a word vectors file and returns a dict with vocabulary and an
+        array with vectors.
+        
+        Parameters
+        ----------
+            textfile: str
+                Path to word vectors file.
+        
+        Returns
+        -------
+            tuple
+                Tuple with:
+                    - dict of words (key) and position (values)
+                    - np.array of word vectors (each row represents a word)
+
+    """
     words={}
     We = []
     f = open(textfile,'r')
@@ -22,7 +39,11 @@ def getWordmap(textfile):
         We.append(v)
     return (words, np.array(We))
 
-def prepare_data(list_of_seqs):
+def prepare_data(list_of_seqs:list):
+    """
+        Takes a list of lists. Each one represents a sentence and contains the
+        positions (in a dictionary) of the words in those sentences.
+    """
     lengths = [len(s) for s in list_of_seqs]
     n_samples = len(list_of_seqs)
     maxlen = np.max(lengths)
@@ -34,7 +55,16 @@ def prepare_data(list_of_seqs):
     x_mask = np.asarray(x_mask, dtype='float32')
     return x, x_mask
 
-def lookupIDX(words,w):
+def lookupIDX(words:dict, w:str):
+    """
+        Takes a dictionary of words (keys) and ids (values) and a word, and
+        returns the id of the given word.
+        If the word starts with a #, it's searched without it.
+        If the word is not in the dictionary but it has a word 'UUUNKKK',
+        its postition is returned.
+        If the word isn't in the dictionary and nether do 'UUUNKKK', the last
+        position of the dictionary is returned.
+    """
     w = w.lower()
     if len(w) > 1 and w[0] == '#':
         w = w.replace("#","")
@@ -45,7 +75,11 @@ def lookupIDX(words,w):
     else:
         return len(words) - 1
 
-def getSeq(p1,words):
+def getSeq(p1:str, words:dict):
+    """
+        Takes a string and a dictionary of words (keys) and ids (values) and
+        returns a list of the words ids in the string.
+    """
     p1 = p1.split()
     X1 = []
     for i in p1:
@@ -190,7 +224,7 @@ def getDataSentiment(batch):
     scores = np.asarray(scores,dtype='float32')
     return (scores,g1x,g1mask)
 
-def sentences2idx(sentences, words):
+def sentences2idx(sentences:list , words: dict):
     """
     Given a list of sentences, output array of word indices that can be fed into the algorithms.
     :param sentences: a list of sentences
@@ -270,7 +304,24 @@ def entailment2idx(sim_file, words):
     x2,m2 = prepare_data(seq2)
     return x1, m1, x2, m2, golds
 
-def getWordWeight(weightfile, a=1e-3):
+def getWordWeight(weightfile:str, a:int=1e-3):
+    """
+        Takes a path to a file with word frequencies and returns a dictionary
+        with words (keys) and relative frequencies (values).
+
+        Parameters
+        ----------
+            weightfile: str
+                Path to file with word frequencies.
+
+            a: int, default=1e-3
+                Parameter for the smooth inverse frequency: a/(a+p(w)), where
+                p(w)=frequency of word w.
+        Returns
+        -------
+            word2weight: dict
+
+    """
     if a <=0: # when the parameter makes no sense, use unweighted
         a = 1.0
 
@@ -286,12 +337,30 @@ def getWordWeight(weightfile, a=1e-3):
                 word2weight[i[0]] = float(i[1])
                 N += float(i[1])
             else:
-                print(i)
+                print(f'Frecuencia inesperada: {i}')
     for key, value in word2weight.items():
         word2weight[key] = a / (a + value/N)
     return word2weight
 
-def getWeight(words, word2weight):
+def getWeight(words:dict, word2weight:dict):
+    """
+        Takes a dictionary of words from a pre-trained embedding and a
+        dictionary with relative frequencies from a corpus, and returns a new
+        dictionary with words from the first dict and the frecuencies from the
+        latter. If a word from the pre-trained embedding has no frequency from
+        corpus, the function assign 1 to it (maximum frequency).
+
+        Parameters
+        ----------
+            words: dict
+
+            word2weight: dict
+
+        Returns
+        -------
+            weight4ind: dict
+                Dictionary with id (keys) and frequencies (values).
+    """
     weight4ind = {}
     for word, ind in words.items():
         if word in word2weight:
@@ -300,7 +369,7 @@ def getWeight(words, word2weight):
             weight4ind[ind] = 1.0
     return weight4ind
 
-def seq2weight(seq, mask, weight4ind):
+def seq2weight(seq:np.array, mask:np.array, weight4ind:dict):
     weight = np.zeros(seq.shape).astype('float32')
     for i in range(seq.shape[0]):
         for j in range(seq.shape[1]):

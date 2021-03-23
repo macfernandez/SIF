@@ -44,7 +44,7 @@ def remove_pc(X, npc=1):
 
 def SIF_embedding(We, x, w, params):
     """
-    Compute the scores between pairs of sentences using weighted average + removing the projection on the first principal component
+    Compute the scores of sentences using weighted average + removing the projection on the first principal component
     :param We: We[i,:] is the vector for word i
     :param x: x[i, :] are the indices of the words in the i-th sentence
     :param w: w[i, :] are the weights for the words in the i-th sentence
